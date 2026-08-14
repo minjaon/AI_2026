@@ -1,0 +1,12 @@
+﻿  d.c
+  Test.c
+  코드를 생성하고 있습니다...
+D:\project\C\AI 2\Test\d.c(1,1): warning C4819: 현재 코드 페이지(949)에서 표시할 수 없는 문자가 파일에 들어 있습니다. 데이터가 손실되지 않게 하려면 해당 파일을 유니코드 형식으로 저장하십시오.
+D:\project\C\AI 2\Test\d.c(1,9): error C2061: 구문 오류: 식별자 'circle_left'
+D:\project\C\AI 2\Test\d.c(1,9): error C2059: 구문 오류: ';'
+D:\project\C\AI 2\Test\d.c(1,20): error C2059: 구문 오류: '['
+D:\project\C\AI 2\Test\d.c(2,9): error C2061: 구문 오류: 식별자 'circle_right'
+D:\project\C\AI 2\Test\d.c(2,9): error C2059: 구문 오류: ';'
+D:\project\C\AI 2\Test\d.c(2,21): error C2059: 구문 오류: '['
+D:\project\C\AI 2\Test\d.c(4,1): error C2059: 구문 오류: 'switch'
+D:\project\C\AI 2\Test\d.c(33,1): error C1004: 예기치 않은 파일의 끝이 나타났습니다.

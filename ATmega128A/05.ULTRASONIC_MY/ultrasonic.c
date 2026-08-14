@@ -1,0 +1,130 @@
+﻿/*
+ * ultrasonic.c
+ *
+ * Created: 2026-06-17 오후 1:32:58
+ *  Author: kccistc
+ */ 
+
+#include "ultrasonic.h"
+
+#include <stdio.h>
+
+extern volatile int ultrasonic_check_time;
+volatile int ultrasonic_distance = 0;
+volatile char scm[50];
+void make_trigger(void);
+void init_ultrasonic(void);
+void ultrasonic_processing(void);
+
+volatile int edge=0;
+
+//p.278 표 12-3
+//INT4 : PE4 외부 INT4 초음파 센서 상승, 하강에지 발생시 이곳으로 진입         
+//결국 상승에지때 1번 들어오고 하강 에지때 1번씩 들어온다.
+//0x000A
+ISR(INT4_vect)
+{
+	//1. 상승 에지
+	if(ECHO_PORT & (1 << ECHO_PIN))
+	{
+		TCNT1 = 0;
+	}	
+	else	//2. 하강 에지
+	{
+		//TCNT1 : Timer count 1
+		//ex) TNCT1이 10이 들어있다고 가정 해보자
+		//15.625KHz의 1주기 : 64us
+		// 0.000064sec * 10개 ==> 0.00064us(640us)
+		//640us / 58(1cm이동 하는데 소요시간) : 11cm
+		//1sec : 1000000us
+
+		ultrasonic_distance = TCNT1 * 1000000.0 * 1024 / F_CPU;
+		//--- 소요 시간을 cm로 환산
+		sprintf((char*)scm, "dis : %dcm\n",ultrasonic_distance/58); //cm		
+		edge=1;
+
+	}
+
+
+	
+}
+
+void init_ultrasonic(void){
+
+	TRIG_DDR |= 1 << TRIG_PIN;  //output mode로 설정
+	ECHO_DDR &= ~(1 << ECHO_PIN);  //input mode로 설정
+
+//p.289 표 12-6 /p.288 그림 12-8 참조
+//0 1: 상승 에지 하강에지 둘다 INT를 띄우도록 요청한다
+	EICRB |= 0 << ISC41 | 1 << ISC40;
+//16bit timer/counter 1번을 사용하기로 하자
+//timer int를 사용하지 않는댜.
+//16bit timer1 16bit로 표시할수있는 최대값(65535)max : 0xffff
+//16MHz/1024 분주 : 16000000Hz/1024 --> 15625Hz --> 15.625KHz
+//1주기(1개의 필수 소요시간) : T=1/f 1/15625 --> 0,000064sec ==>64us
+//분주비 1024 설정 p.318 표 14-1
+	TCCR1B |= 1 << CS12 | 1 << CS10; //1024분주
+
+	//----- EINT4 설정 ------
+//p 287 그림 12-6
+
+	EIMSK |= 1 << INT4; //외부 INT4(ECHO핀)
+}
+
+void make_trigger(void){
+
+	TRIG_PORT &= ~(1 << TRIG_PIN); //low로 만듦
+	_delay_us(1);
+	TRIG_PORT |= 1 << TRIG_PIN; //high로 만듦
+	_delay_us(15); //규격에는 10us인데 reduancy로 15us
+	TRIG_PORT &= ~(1 << TRIG_PIN); //low로 만듦
+
+}
+
+
+void ultrasonic_processing(void){
+
+	if(edge == 1)
+	{
+		edge = 0; 
+		
+		printf("%s", scm);
+		
+
+		make_trigger();
+		int distance_cm = ultrasonic_distance / 58;
+	
+		if (distance_cm <= 2)
+		{
+			PORTA = 0b00000001; 
+		}
+		else if (distance_cm <= 3)
+		{
+			PORTA = 0b00000011; 
+		}
+		else if (distance_cm <= 4)
+		{
+			PORTA = 0b00000111; 
+		}
+		else if (distance_cm <= 5)
+		{
+			PORTA = 0b00001111; 
+		}
+		else if (distance_cm <= 6)
+		{
+			PORTA = 0b00011111; 
+		}
+		else if (distance_cm <= 7)
+		{
+			PORTA = 0b00111111; 
+		}
+		else if (distance_cm <= 10)
+		{
+			PORTA = 0b01111111; 
+		}
+		else 
+		{
+			PORTA = 0b11111111; 
+		}
+	}
+}

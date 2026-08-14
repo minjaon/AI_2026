@@ -1,0 +1,70 @@
+﻿/*
+ * button.h
+ *
+ * Created: 2026-06-10 오전 11:45:01
+ * Author: user
+ */ 
+
+#ifndef BUTTON_H_
+#define BUTTON_H_
+
+#define F_CPU 16000000UL     // 16MHz
+#include <avr/io.h>          // PORTA, PORTB, PORTD... IO관련 reg가 들어 있다.
+#include <util/delay.h>      // _delay_ms, _delay_us 사용
+
+// --- 기존 PORTD 버튼 정의 ---
+#define BUTTON_DDR  DDRD
+#define BUTTON_PIN  PIND     // PORTD를 읽는 register 5v:1, 0v:0
+
+#define BUTTON0     0        // PORTD.3의 가상 Index (sw번호) -> ⚠️ 실제 매핑 확인 필요
+#define BUTTON1     1        // PORTD.4의 가상 Index (sw번호)
+#define BUTTON2     2        // PORTD.5의 가상 Index (sw번호)
+#define BUTTON3     3        // PORTD.6의 가상 Index (sw번호)
+
+// --- 💡 추가된 PG1 스위치 정의 ---
+#define BUTTON4PIN  1        // PG1 핀 번호
+#define BUTTON4     4        // 가상 Index (sw번호)
+
+#define BUTTON_NUMBER 5      // 버튼 갯수를 4개에서 5개로 변경
+
+// --- 상태 및 액티브 모드 정의 ---
+#define BUTTON_PRESS   1     // 버튼을 누르면 high (active-high)
+#define BUTTON_RELEASE 0     // 버튼을 뗀 상태 (low)
+
+// 💡 추가: Active-Low 방식으로 연결된 BUTTON4(PG1)를 읽기 위한 매크로
+#define IS_BUTTON4_PRESSED (!(PING & (1 << BUTTON4PIN)))
+
+#endif /* BUTTON_H_ */
+
+/*
+ * button.h
+ *
+ * Created: 2026-06-10 오전 11:45:01
+ *  Author: user
+ */ 
+
+#define F_CPU 16000000UL  //16MHz
+#include <avr/io.h>  // PORTA PORTB PORTD... IO관련 reg가 들어 있다. 
+#include <util/delay.h>  // _delay_ms _delay_us 등 
+
+#define  BUTTON_DDR  DDRD
+#define  BUTTON_PIN  PIND   // PORTD를 읽는 register 5v:1  0v:0 
+
+#define  BUTTON0PIN 3    // PORTD.4
+#define  BUTTON1PIN 4    // PORTD.5
+#define  BUTTON2PIN 5    // PORTD.6
+#define  BUTTON3PIN 6    // PORTD.7
+#define BUTTON_DDR  DDRD
+#define BUTTON_PIN  PIND
+
+#define BUTTON_NUMBER 4
+
+int get_button_pressed(int btn_num);
+#define  BUTTON0   0   // PORTD.3의 가상 index (sw번호)
+#define  BUTTON1   1   // PORTD.4의 가상 index (sw번호)
+#define  BUTTON2   2   // PORTD.5의 가상 index (sw번호)
+#define  BUTTON3   3   // PORTD.6의 가상 index (sw번호)
+#define  BUTTON_NUMBER  4   // 버튼 갯수 
+
+#define  BUTTON_PRESS  1      // 버튼을 누르면 high (active-high)
+#define  BUTTON_RELEASE 0     // 버튼을 뗀 상태 (low)
